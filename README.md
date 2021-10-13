@@ -10,4 +10,5 @@
 ### Mainnet
 
  - Implementation - [xdcff254f22902a32ff51e0a95cee891143cc0e1c3a](https://explorer.xinfin.network/addr/xdcff254f22902a32ff51e0a95cee891143cc0e1c3a)
+ - Implementation V3 - [xdc1d7203c1ad90a56d6b3ca45d984652c6eac6e3b1](https://explorer.xinfin.network/addr/xdc1d7203c1ad90a56d6b3ca45d984652c6eac6e3b1) 
  - Proxy - [xdcff7412ea7c8445c46a8254dfb557ac1e48094391](https://explorer.xinfin.network/addr/xdcff7412ea7c8445c46a8254dfb557ac1e48094391)
