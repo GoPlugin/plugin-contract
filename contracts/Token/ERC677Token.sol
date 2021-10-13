@@ -35,7 +35,7 @@ contract ERC677Token is ERC677 {
   }
 
   function isContract(address _addr)
-    private
+    private view
     returns (bool hasCode)
   {
     uint length;
