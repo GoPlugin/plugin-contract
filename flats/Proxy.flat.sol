@@ -328,7 +328,7 @@ contract AdminUpgradeabilityProxy is UpgradeabilityProxy {
     }
 }
 
-// File: contracts/StorXTokenProxy.sol
+// File: contracts/PluginTokenProxy.sol
 
 /**
  * Copyright CENTRE SECZ 2018
@@ -352,7 +352,7 @@ contract AdminUpgradeabilityProxy is UpgradeabilityProxy {
  */
 
 /**
- * @title StorXTokenProxy
+ * @title PluginTokenProxy
  * @dev This contract proxies FiatToken calls and enables FiatToken upgrades
  */
 contract PluginProxy is AdminUpgradeabilityProxy {

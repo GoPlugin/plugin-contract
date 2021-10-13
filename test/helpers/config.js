@@ -1,3 +1,3 @@
 module.exports = {
-  tokenParams: ['Storx', 'Storx', '18', '100'],
+  tokenParams: ['Plugin', 'PLI', '18', '100'],
 };

@@ -1,6 +1,6 @@
 {
   "name": "Plugin",
-  "symbol": "PLUG",
+  "symbol": "PLI",
   "decimals": 18,
   "initialSupply": "500000000000000000000000000"
 }

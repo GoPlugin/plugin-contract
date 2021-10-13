@@ -2,8 +2,9 @@ pragma solidity ^0.4.24;
 
 import "./Operator.sol";
 import "./BurnableToken.sol";
+import "./ERC677Token.sol";
 
-contract Plugin is BurnableToken, Operator {
+contract Plugin is BurnableToken, Operator, ERC677Token {
     string public name;
     string public symbol;
     uint8 public decimals;
@@ -33,5 +34,25 @@ contract Plugin is BurnableToken, Operator {
 
     function destroy() public onlyOwner {
         selfdestruct(owner);
+    }
+
+    /**
+     * @dev transfer token to a specified address with additional data if the recipient is a contract.
+     * @param _to The address to transfer to.
+     * @param _value The amount to be transferred.
+     * @param _data The extra data to be passed to the receiving contract.
+     */
+    function transferAndCall(
+        address _to,
+        uint256 _value,
+        bytes _data
+    ) public validRecipient(_to) returns (bool success) {
+        return super.transferAndCall(_to, _value, _data);
+    }
+
+    // MODIFIERS
+    modifier validRecipient(address _recipient) {
+        require(_recipient != address(0) && _recipient != address(this));
+        _;
     }
 }

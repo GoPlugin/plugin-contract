@@ -1,4 +1,4 @@
-const StorxTokenBad = artifacts.require('PluginBad');
+const PluginTokenBad = artifacts.require('PluginBad');
 const StorTokenGood = artifacts.require('Plugin');
 const Proxy_Mock = artifacts.require('PluginProxy');
 const { assert } = require('chai');
@@ -9,10 +9,10 @@ const NOT_OPERATOR = 'operator: caller is not the operator';
 
 contract('DetailedERC20', ([_, proxyAdmin, notProxyAdmin, owner, notowner, recipient]) => {
   beforeEach(async () => {
-    const implementationOld = await StorxTokenBad.new({ from: proxyAdmin });
+    const implementationOld = await PluginTokenBad.new({ from: proxyAdmin });
     const implementationNew = await StorTokenGood.new({ from: proxyAdmin });
     const proxyAddress = await Proxy_Mock.new(implementationOld.address, { from: proxyAdmin });
-    const proxy = await StorxTokenBad.at(proxyAddress.address);
+    const proxy = await PluginTokenBad.at(proxyAddress.address);
 
     this.implementationOld = implementationOld;
     this.implementationNew = implementationNew;
