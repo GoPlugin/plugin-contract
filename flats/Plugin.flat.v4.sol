@@ -78,10 +78,24 @@ contract Initializable {
  */
 contract Ownable is Initializable {
     address public owner;
+    address public potentialAdmin;
 
     event OwnershipRenounced(address indexed previousOwner);
     event OwnershipTransferred(
         address indexed previousOwner,
+        address indexed newOwner
+    );
+
+    //Event for ownership Initialization
+    event OwnershipInitialized(
+        address indexed newOwner
+    );
+
+    event AdminNominated(
+        address indexed nominated
+    );
+
+    event AdminChanged(
         address indexed newOwner
     );
 
@@ -90,6 +104,7 @@ contract Ownable is Initializable {
      * account.
      */
     function _initializeOwner() internal initializer {
+        emit OwnershipInitialized(msg.sender);
         owner = msg.sender;
     }
 
@@ -97,7 +112,7 @@ contract Ownable is Initializable {
      * @dev Throws if called by any account other than the owner.
      */
     modifier onlyOwner() {
-        require(msg.sender == owner);
+        require(msg.sender == owner,"Sender must be a Owner");
         _;
     }
 
@@ -112,23 +127,38 @@ contract Ownable is Initializable {
         owner = address(0);
     }
 
-    /**
-     * @dev Allows the current owner to transfer control of the contract to a newOwner.
-     * @param _newOwner The address to transfer ownership to.
-     */
-    function transferOwnership(address _newOwner) public onlyOwner {
-        _transferOwnership(_newOwner);
+    //Commented below functions as advised by Security Audit team and introduced transferAdmin / AcceptAdmin functions
+    // /**
+    //  * @dev Allows the current owner to transfer control of the contract to a newOwner.
+    //  * @param _newOwner The address to transfer ownership to.
+    //  */
+    // function transferOwnership(address _newOwner) public onlyOwner {
+    //     _transferOwnership(_newOwner);
+    // }
+
+    // /**
+    //  * @dev Transfers control of the contract to a newOwner.
+    //  * @param _newOwner The address to transfer ownership to.
+    //  */
+    // function _transferOwnership(address _newOwner) internal {
+    //     require(_newOwner != address(0),"NewOwner Should not be address(0)");
+    //     emit OwnershipTransferred(owner, _newOwner);
+    //     owner = _newOwner;
+    // }
+
+    function transferAdmin(address _pendingAdmin) external onlyOwner {
+        require(_pendingAdmin != address(0), "potential admin can not be the zero address.")
+        potentialAdmin = _pendingAdmin;
+        emit AdminNominated(_pendingAdmin);
     }
 
-    /**
-     * @dev Transfers control of the contract to a newOwner.
-     * @param _newOwner The address to transfer ownership to.
-     */
-    function _transferOwnership(address _newOwner) internal {
-        require(_newOwner != address(0));
-        emit OwnershipTransferred(owner, _newOwner);
-        owner = _newOwner;
+    function acceptAdmin() external {
+        require(msg.sender == potentialAdmin, 'You must be nominated as potential admin before you can accept administer role');
+        owner = potentialAdmin;
+        potentialAdmin = address(0);
+        emit AdminChanged(admin)
     }
+
 }
 
 
@@ -277,8 +307,8 @@ contract BasicToken is ERC20Basic {
      * @param _value The amount to be transferred.
      */
     function transfer(address _to, uint256 _value) public returns (bool) {
-        require(_value <= balances[msg.sender]);
-        require(_to != address(0));
+        require(_value <= balances[msg.sender],"Value must be less than actual balance");
+        require(_to != address(0),"To Address must not be address(0)");
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -352,9 +382,9 @@ contract StandardToken is ERC20, BasicToken {
         address _to,
         uint256 _value
     ) public returns (bool) {
-        require(_value <= balances[_from]);
-        require(_value <= allowed[_from][msg.sender]);
-        require(_to != address(0));
+        require(_value <= balances[_from],"Value must be less than actual balance");
+        require(_value <= allowed[_from][msg.sender],"Allowance not met");
+        require(_to != address(0),"To address must not be address(0)");
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -442,6 +472,7 @@ contract StandardToken is ERC20, BasicToken {
      * @return A boolean that indicates if the operation was successful.
      */
     function _mint(address _to, uint256 _amount) internal returns (bool) {
+        require(_to !=address(0),"to address must not be address(0)");
         totalSupply_ = totalSupply_.add(_amount);
         balances[_to] = balances[_to].add(_amount);
         emit Mint(_to, _amount);
@@ -467,7 +498,7 @@ contract BurnableToken is StandardToken {
     }
 
     function _burn(address _who, uint256 _value) internal {
-        require(_value <= balances[_who]);
+        require(_value <= balances[_who],"Value must be LTE to available balance");
         // no need to require value <= totalSupply, since that would imply the
         // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
@@ -575,9 +606,10 @@ contract Plugin is BurnableToken, Operator, ERC677Token {
 
     // MODIFIERS
     modifier validRecipient(address _recipient) {
-        require(_recipient != address(0) && _recipient != address(this));
+        require(_recipient != address(0) && _recipient != address(this),"Address must be a valid recipient");
         _;
     }
 }
+
 
 

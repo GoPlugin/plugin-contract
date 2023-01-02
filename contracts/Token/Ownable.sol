@@ -16,11 +16,17 @@ contract Ownable is Initializable {
         address indexed newOwner
     );
 
+    //Event for ownership Initialization
+    event OwnershipInitialized(
+        address indexed newOwner
+    );
+
     /**
      * @dev The Ownable constructor sets the original `owner` of the contract to the sender
      * account.
      */
     function _initializeOwner() internal initializer {
+        emit OwnershipInitialized(msg.sender);
         owner = msg.sender;
     }
 
