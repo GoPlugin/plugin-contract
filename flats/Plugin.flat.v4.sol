@@ -81,10 +81,10 @@ contract Ownable is Initializable {
     address public potentialAdmin;
 
     event OwnershipRenounced(address indexed previousOwner);
-    event OwnershipTransferred(
-        address indexed previousOwner,
-        address indexed newOwner
-    );
+    // event OwnershipTransferred(
+    //     address indexed previousOwner,
+    //     address indexed newOwner
+    // );
 
     //Event for ownership Initialization
     event OwnershipInitialized(
