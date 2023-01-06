@@ -123,8 +123,8 @@ contract Ownable is Initializable {
      * modifier anymore.
      */
     function renounceOwnership() public onlyOwner {
-        emit OwnershipRenounced(owner);
-        owner = address(0);
+        emit OwnershipRenounced(potentialAdmin);
+        potentialAdmin = address(0);
     }
 
     //Commented below functions as advised by Security Audit team and introduced transferAdmin / AcceptAdmin functions
@@ -147,7 +147,7 @@ contract Ownable is Initializable {
     // }
 
     function transferAdmin(address _pendingAdmin) external onlyOwner {
-        require(_pendingAdmin != address(0), "potential admin can not be the zero address.")
+        require(_pendingAdmin != address(0), "potential admin can not be the zero address.");
         potentialAdmin = _pendingAdmin;
         emit AdminNominated(_pendingAdmin);
     }
@@ -156,7 +156,7 @@ contract Ownable is Initializable {
         require(msg.sender == potentialAdmin, 'You must be nominated as potential admin before you can accept administer role');
         owner = potentialAdmin;
         potentialAdmin = address(0);
-        emit AdminChanged(admin)
+        emit AdminChanged(owner);
     }
 
 }
@@ -559,6 +559,7 @@ contract ERC677Token is ERC677 {
 }
 
 contract Plugin is BurnableToken, Operator, ERC677Token {
+
     string public name;
     string public symbol;
     uint8 public decimals;
@@ -574,7 +575,7 @@ contract Plugin is BurnableToken, Operator, ERC677Token {
         decimals = _decimals;
         balances[msg.sender] = _totalSupply;
         totalSupply_ = _totalSupply;
-
+        _mint(msg.sender, _totalSupply);
         _initializeOwner();
         _initializeOperator();
     }
