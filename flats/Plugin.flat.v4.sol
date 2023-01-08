@@ -1,7 +1,11 @@
 pragma solidity ^0.4.24;
 
 contract ERC677Receiver {
-  function onTokenTransfer(address _sender, uint _value, bytes _data) public;
+    function onTokenTransfer(
+        address _sender,
+        uint256 _value,
+        bytes _data
+    ) public;
 }
 
 // SPDX-License-Identifier: MIT
@@ -70,7 +74,6 @@ contract Initializable {
     uint256[50] private ______gap;
 }
 
-
 /**
  * @title Ownable
  * @dev The Ownable contract has an owner address, and provides basic authorization control
@@ -87,17 +90,11 @@ contract Ownable is Initializable {
     // );
 
     //Event for ownership Initialization
-    event OwnershipInitialized(
-        address indexed newOwner
-    );
+    event OwnershipInitialized(address indexed newOwner);
 
-    event AdminNominated(
-        address indexed nominated
-    );
+    event AdminNominated(address indexed nominated);
 
-    event AdminChanged(
-        address indexed newOwner
-    );
+    event AdminChanged(address indexed newOwner);
 
     /**
      * @dev The Ownable constructor sets the original `owner` of the contract to the sender
@@ -112,7 +109,7 @@ contract Ownable is Initializable {
      * @dev Throws if called by any account other than the owner.
      */
     modifier onlyOwner() {
-        require(msg.sender == owner,"Sender must be a Owner");
+        require(msg.sender == owner, "Sender must be a Owner");
         _;
     }
 
@@ -124,6 +121,7 @@ contract Ownable is Initializable {
      */
     function renounceOwnership() public onlyOwner {
         emit OwnershipRenounced(potentialAdmin);
+        owner = address(0);
         potentialAdmin = address(0);
     }
 
@@ -147,20 +145,24 @@ contract Ownable is Initializable {
     // }
 
     function transferAdmin(address _pendingAdmin) external onlyOwner {
-        require(_pendingAdmin != address(0), "potential admin can not be the zero address.");
+        require(
+            _pendingAdmin != address(0),
+            "potential admin can not be the zero address."
+        );
         potentialAdmin = _pendingAdmin;
         emit AdminNominated(_pendingAdmin);
     }
 
     function acceptAdmin() external {
-        require(msg.sender == potentialAdmin, 'You must be nominated as potential admin before you can accept administer role');
+        require(
+            msg.sender == potentialAdmin,
+            "You must be nominated as potential admin before you can accept administer role"
+        );
         owner = potentialAdmin;
         potentialAdmin = address(0);
         emit AdminChanged(owner);
     }
-
 }
-
 
 contract Operator is Ownable {
     address private _operator;
@@ -205,11 +207,7 @@ contract Operator is Ownable {
     }
 }
 
-
-
 // File: contracts/token/ERC20/ERC20Basic.sol
-
-
 
 /**
  * @title ERC20Basic
@@ -227,8 +225,6 @@ contract ERC20Basic {
 }
 
 // File: contracts/math/SafeMath.sol
-
-
 
 /**
  * @title SafeMath
@@ -281,8 +277,6 @@ library SafeMath {
 
 // File: contracts/token/ERC20/BasicToken.sol
 
-
-
 /**
  * @title Basic token
  * @dev Basic version of StandardToken, with no allowances.
@@ -307,8 +301,11 @@ contract BasicToken is ERC20Basic {
      * @param _value The amount to be transferred.
      */
     function transfer(address _to, uint256 _value) public returns (bool) {
-        require(_value <= balances[msg.sender],"Value must be less than actual balance");
-        require(_to != address(0),"To Address must not be address(0)");
+        require(
+            _value <= balances[msg.sender],
+            "Value must be less than actual balance"
+        );
+        require(_to != address(0), "To Address must not be address(0)");
 
         balances[msg.sender] = balances[msg.sender].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -327,8 +324,6 @@ contract BasicToken is ERC20Basic {
 }
 
 // File: contracts/token/ERC20/ERC20.sol
-
-
 
 /**
  * @title ERC20 interface
@@ -357,8 +352,6 @@ contract ERC20 is ERC20Basic {
 
 // File: contracts/token/ERC20/StandardToken.sol
 
-
-
 /**
  * @title Standard ERC20 token
  *
@@ -382,9 +375,12 @@ contract StandardToken is ERC20, BasicToken {
         address _to,
         uint256 _value
     ) public returns (bool) {
-        require(_value <= balances[_from],"Value must be less than actual balance");
-        require(_value <= allowed[_from][msg.sender],"Allowance not met");
-        require(_to != address(0),"To address must not be address(0)");
+        require(
+            _value <= balances[_from],
+            "Value must be less than actual balance"
+        );
+        require(_value <= allowed[_from][msg.sender], "Allowance not met");
+        require(_to != address(0), "To address must not be address(0)");
 
         balances[_from] = balances[_from].sub(_value);
         balances[_to] = balances[_to].add(_value);
@@ -472,7 +468,7 @@ contract StandardToken is ERC20, BasicToken {
      * @return A boolean that indicates if the operation was successful.
      */
     function _mint(address _to, uint256 _amount) internal returns (bool) {
-        require(_to !=address(0),"to address must not be address(0)");
+        require(_to != address(0), "to address must not be address(0)");
         totalSupply_ = totalSupply_.add(_amount);
         balances[_to] = balances[_to].add(_amount);
         emit Mint(_to, _amount);
@@ -480,7 +476,6 @@ contract StandardToken is ERC20, BasicToken {
         return true;
     }
 }
-
 
 /**
  * @title Burnable Token
@@ -498,7 +493,10 @@ contract BurnableToken is StandardToken {
     }
 
     function _burn(address _who, uint256 _value) internal {
-        require(_value <= balances[_who],"Value must be LTE to available balance");
+        require(
+            _value <= balances[_who],
+            "Value must be LTE to available balance"
+        );
         // no need to require value <= totalSupply, since that would imply the
         // sender's balance is greater than the totalSupply, which *should* be an assertion failure
 
@@ -509,60 +507,67 @@ contract BurnableToken is StandardToken {
     }
 }
 
-
 contract ERC677 is ERC20 {
-  function transferAndCall(address to, uint value, bytes data) public returns (bool success);
+    function transferAndCall(
+        address to,
+        uint256 value,
+        bytes data
+    ) public returns (bool success);
 
-  event Transfer(address indexed from, address indexed to, uint value, bytes data);
+    event Transfer(
+        address indexed from,
+        address indexed to,
+        uint256 value,
+        bytes data
+    );
 }
 
-
 contract ERC677Token is ERC677 {
-
-  /**
-  * @dev transfer token to a contract address with additional data if the recipient is a contact.
-  * @param _to The address to transfer to.
-  * @param _value The amount to be transferred.
-  * @param _data The extra data to be passed to the receiving contract.
-  */
-  function transferAndCall(address _to, uint _value, bytes _data)
-    public
-    returns (bool success)
-  {
-    super.transfer(_to, _value);
-    emit Transfer(msg.sender, _to, _value, _data);
-    if (isContract(_to)) {
-      contractFallback(_to, _value, _data);
+    /**
+     * @dev transfer token to a contract address with additional data if the recipient is a contact.
+     * @param _to The address to transfer to.
+     * @param _value The amount to be transferred.
+     * @param _data The extra data to be passed to the receiving contract.
+     */
+    function transferAndCall(
+        address _to,
+        uint256 _value,
+        bytes _data
+    ) public returns (bool success) {
+        super.transfer(_to, _value);
+        emit Transfer(msg.sender, _to, _value, _data);
+        if (isContract(_to)) {
+            contractFallback(_to, _value, _data);
+        }
+        return true;
     }
-    return true;
-  }
 
+    // PRIVATE
 
-  // PRIVATE
+    function contractFallback(
+        address _to,
+        uint256 _value,
+        bytes _data
+    ) private {
+        ERC677Receiver receiver = ERC677Receiver(_to);
+        receiver.onTokenTransfer(msg.sender, _value, _data);
+    }
 
-  function contractFallback(address _to, uint _value, bytes _data)
-    private
-  {
-    ERC677Receiver receiver = ERC677Receiver(_to);
-    receiver.onTokenTransfer(msg.sender, _value, _data);
-  }
-
-  function isContract(address _addr)
-    private view
-    returns (bool hasCode)
-  {
-    uint length;
-    assembly { length := extcodesize(_addr) }
-    return length > 0;
-  }
-
+    function isContract(address _addr) private view returns (bool hasCode) {
+        uint256 length;
+        assembly {
+            length := extcodesize(_addr)
+        }
+        return length > 0;
+    }
 }
 
 contract Plugin is BurnableToken, Operator, ERC677Token {
-
     string public name;
     string public symbol;
     uint8 public decimals;
+
+    constructor() initializer {}
 
     function initialize(
         string _name,
@@ -575,7 +580,7 @@ contract Plugin is BurnableToken, Operator, ERC677Token {
         decimals = _decimals;
         balances[msg.sender] = _totalSupply;
         totalSupply_ = _totalSupply;
-        _mint(msg.sender, _totalSupply);
+        emit Mint(msg.sender, _totalSupply);
         _initializeOwner();
         _initializeOperator();
     }
@@ -607,10 +612,10 @@ contract Plugin is BurnableToken, Operator, ERC677Token {
 
     // MODIFIERS
     modifier validRecipient(address _recipient) {
-        require(_recipient != address(0) && _recipient != address(this),"Address must be a valid recipient");
+        require(
+            _recipient != address(0) && _recipient != address(this),
+            "Address must be a valid recipient"
+        );
         _;
     }
 }
-
-
-
