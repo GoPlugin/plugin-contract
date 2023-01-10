@@ -120,7 +120,7 @@ contract Ownable is Initializable {
      * modifier anymore.
      */
     function renounceOwnership() public onlyOwner {
-        emit OwnershipRenounced(potentialAdmin);
+        emit OwnershipRenounced(owner);
         owner = address(0);
         potentialAdmin = address(0);
     }
