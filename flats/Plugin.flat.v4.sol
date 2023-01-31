@@ -81,9 +81,7 @@ contract Initializable {
  */
 contract Ownable is Initializable {
     address public owner;
-    address public potentialAdmin;
 
-    event OwnershipRenounced(address indexed previousOwner);
     // event OwnershipTransferred(
     //     address indexed previousOwner,
     //     address indexed newOwner
@@ -119,11 +117,11 @@ contract Ownable is Initializable {
      * It will not be possible to call the functions with the `onlyOwner`
      * modifier anymore.
      */
-    function renounceOwnership() public onlyOwner {
-        emit OwnershipRenounced(owner);
-        owner = address(0);
-        potentialAdmin = address(0);
-    }
+    // function renounceOwnership() public onlyOwner {
+    //     emit OwnershipRenounced(owner);
+    //     owner = address(0);
+    //     potentialAdmin = address(0);
+    // }
 
     //Commented below functions as advised by Security Audit team and introduced transferAdmin / AcceptAdmin functions
     // /**
@@ -144,24 +142,24 @@ contract Ownable is Initializable {
     //     owner = _newOwner;
     // }
 
-    function transferAdmin(address _pendingAdmin) external onlyOwner {
-        require(
-            _pendingAdmin != address(0),
-            "potential admin can not be the zero address."
-        );
-        potentialAdmin = _pendingAdmin;
-        emit AdminNominated(_pendingAdmin);
-    }
+    // function transferAdmin(address _pendingAdmin) external onlyOwner {
+    //     require(
+    //         _pendingAdmin != address(0),
+    //         "potential admin can not be the zero address."
+    //     );
+    //     potentialAdmin = _pendingAdmin;
+    //     emit AdminNominated(_pendingAdmin);
+    // }
 
-    function acceptAdmin() external {
-        require(
-            msg.sender == potentialAdmin,
-            "You must be nominated as potential admin before you can accept administer role"
-        );
-        owner = potentialAdmin;
-        potentialAdmin = address(0);
-        emit AdminChanged(owner);
-    }
+    // function acceptAdmin() external {
+    //     require(
+    //         msg.sender == potentialAdmin,
+    //         "You must be nominated as potential admin before you can accept administer role"
+    //     );
+    //     owner = potentialAdmin;
+    //     potentialAdmin = address(0);
+    //     emit AdminChanged(owner);
+    // }
 }
 
 contract Operator is Ownable {
@@ -566,6 +564,10 @@ contract Plugin is BurnableToken, Operator, ERC677Token {
     string public name;
     string public symbol;
     uint8 public decimals;
+    address public potentialAdmin;
+
+
+    event OwnershipRenounced(address indexed previousOwner);
 
     constructor() initializer {}
 
@@ -617,5 +619,30 @@ contract Plugin is BurnableToken, Operator, ERC677Token {
             "Address must be a valid recipient"
         );
         _;
+    }
+
+    function renounceOwnership() public onlyOwner {
+        emit OwnershipRenounced(owner);
+        owner = address(0);
+        potentialAdmin = address(0);
+    }
+
+    function transferAdmin(address _pendingAdmin) external onlyOwner {
+        require(
+            _pendingAdmin != address(0),
+            "potential admin can not be the zero address."
+        );
+        potentialAdmin = _pendingAdmin;
+        emit AdminNominated(_pendingAdmin);
+    }
+
+    function acceptAdmin() external {
+        require(
+            msg.sender == potentialAdmin,
+            "You must be nominated as potential admin before you can accept administer role"
+        );
+        owner = potentialAdmin;
+        potentialAdmin = address(0);
+        emit AdminChanged(owner);
     }
 }
