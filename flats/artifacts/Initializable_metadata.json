@@ -1,0 +1,37 @@
+{
+	"compiler": {
+		"version": "0.4.26+commit.4563c3fc"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [],
+		"devdoc": {
+			"methods": {},
+			"title": "Initializable"
+		},
+		"userdoc": {
+			"methods": {}
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"flats/Plugin.flat.v4.sol": "Initializable"
+		},
+		"evmVersion": "byzantium",
+		"libraries": {},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"flats/Plugin.flat.v4.sol": {
+			"keccak256": "0x168b27b6f8bc9cb7f574dba6422803a900800a581888f9ed8efe054deb937016",
+			"urls": [
+				"bzzr://ab6678e9d5d3e4056757752e6e007a2c20dcbb133f5efcce0c6412e8cf4740f4"
+			]
+		}
+	},
+	"version": 1
+}
